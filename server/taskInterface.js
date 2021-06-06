@@ -1,69 +1,63 @@
 const { v4: uuidv4 } = require('uuid');
+const db = require('../db/db');
+const tasksTable = 'tasks'
+const tasksToUsersTable = 'task_user_map'
 
-const DB = []
-
-const taskUserMap = []
-
-function findTaskById(id){
-    return DB.find(task => task.id == id);
+async function findTaskById(id){
+    return await db(tasksTable)
+                .where({id});
 }
 
-function initTask(header, description){
-    const taskId = uuidv4();
-    var task = {id: taskId, header: header, description: description};
-    return task;
+async function deleteTask(id){
+    await db(tasksTable)
+        .where({id})
+        .del();
 }
 
-function deleteTask(id){
-    var task = findTaskById(id);
-    if (task == undefined){
-        return false;
-    }
-    var index = DB.indexOf(task)
-    DB.splice(index, 1)
-    return true;
+async function createTask(header, description){
+    return await db(tasksTable)
+                .returning('id')
+                .insert({
+                    header: header,
+                    description: description
+                });
 }
 
-function createTask(header, description){
-    var task = initTask(header, description);
-    DB.push(task);
-    return task.id;
+async function updateTask(id, changes){
+    return await db(tasksTable)
+                // .returning('id')
+                .where({id})
+                .update(changes);
 }
 
-function updateTask(id, header, description){
-    var task = findTaskById(id);
-    if (task == undefined){
-        return false;
-    }
-    var index = DB.indexOf(task);
-
-    DB[index].header = header;
-    DB[index].description = description;
-    return true;
+async function detachTaskFromUser(userId, taskId){
+    return await db(tasksToUsersTable)
+                .where('user_id', userId)
+                .where('task_id', taskId)
+                .del();
 }
 
-function initMapping(userId, taskId){
-    const mappingId = uuidv4();
-    var mapping = {id: mappingId, userId: userId, taskId: taskId};
-    return mapping;
+async function attachTaskToUser(userId, taskId){
+    return await db(tasksToUsersTable)
+                .returning('id')
+                .insert({
+                  user_id: userId,
+                  task_id: taskId
+                });
 }
 
-function detachTaskFromUser(userId, taskId){
-    var mapping = taskUserMap.find(mapping => mapping.userId == userId && mapping.taskId == taskId);
-    if (mapping != undefined){
-        var index = taskUserMap.indexOf(mapping);
-        taskUserMap.splice(index, 1);
-    }
+async function mappingExists(userId, taskId){
+    const mapping = await db(tasksToUsersTable)
+                        .where('user_id', userId)
+                        .where('task_id', taskId);
+    if (mapping.length)
+        return true;
+    return false;
 }
 
-function attachTaskToUser(userId, taskId){
-    var mapping = initMapping(userId, taskId);
-    taskUserMap.push(mapping);
-    return mapping;
-}
-
-function getAllTasks(){
-    return DB;
+async function getAllTasks(){
+    return await db(tasksTable)
+                .select();
 }
 
 module.exports = {
@@ -73,5 +67,6 @@ module.exports = {
     findTaskById,
     detachTaskFromUser,
     attachTaskToUser,
-    getAllTasks
+    getAllTasks,
+    mappingExists
 }

@@ -6,79 +6,103 @@ const { body, param, validationResult } = require('express-validator');
 var jsonParser = bodyParser.json();
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-// GET (get all tasks): curl -X GET http://localhost:8081/tasks
-taskRouter.get('/', function(req, res){
-    res.send(taskInterface.getAllTasks());
-})
+// GET (get all tasks): curl -X GET http://localhost:8082/tasks
+taskRouter.get('/', async function(req, res, next){
+    try{
+        res.send(await taskInterface.getAllTasks());
+    } catch (err){
+        next(err);
+    }
+});
 
-// POST (create task): curl -X POST -d 'header=To Do App&description=Code one' http://localhost:8081/tasks
-taskRouter.post('/', urlencodedParser, body('header').notEmpty(), function(req, res) {
+// POST (create task): curl -X POST -d 'header=To Do App&description=Code one' http://localhost:8082/tasks
+taskRouter.post('/', urlencodedParser, body('header').notEmpty(), async function(req, res, next) {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
+    try{
+        const taskId = await taskInterface.createTask(req.body.header, req.body.description);
+        res.send(`Task created with id ${taskId}`);
+    } catch (err){
+        next(err);
     }
-    const taskId = taskInterface.createTask(req.body.header, req.body.description)
-    res.send('Task created with id: ' + taskId);
-})
+});
 
-// GET /id (get task with id): curl -X GET http://localhost:8081/tasks/TASKIcD
-taskRouter.get('/:id', function (req, res) {
-    var task = taskInterface.findTaskById(req.params.id)
-    if (task == undefined){
-        res.send('Task not found');
-    } else {
-        res.send(task);
+// GET /id (get task with id): curl -X GET http://localhost:8082/tasks/TASKID
+taskRouter.get('/:id', async function (req, res, next) {
+    try{
+        res.send(await taskInterface.findTaskById(req.params.id));
+    } catch (err){
+        next(err);
     }
-})
+});
 
-// PUT /id (update task with id): curl -X PUT -d 'header=To Do App&description=New description' http://localhost:8081/tasks/TASKID
-taskRouter.put('/:id', urlencodedParser, body('header').notEmpty(), function (req, res) {
+// PUT /id (update task with id): curl -X PUT -d 'header=To Do App&description=New description' http://localhost:8082/tasks/TASKID
+taskRouter.put('/:id', urlencodedParser, body('header').notEmpty(), async function (req, res, next) {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
+    msg = `Task with id ${req.params.id} `;
+    try{
+        const task = await taskInterface.updateTask(req.params.id, req.body);
+        if (task)
+            msg += `updated`;
+        else
+            msg += `not found`;
+        res.send(msg);    
+    } catch (err) {
+        next(err);
     }
-    var taskUpdated = taskInterface.updateTask(req.params.id, req.body.header, req.body.description);
-    if (taskUpdated){
-        res.send('Task updated');
-    } else {
-        res.send('Task not found');
-    }
-})
+});
 
-// DELETE /id (delete task with id): curl -X DELETE http://localhost:8081/tasks/TASKID
-taskRouter.delete('/:id', function (req, res) {
-    var taskDeleted = taskInterface.deleteTask(req.params.id);
-    if (taskDeleted){
-        res.send('Task deleted');
-    } else {
-        res.send('Task not found');
-    }
-})
-
-// PATCH /id (map task with id to user with userId): curl -X PATCH -d 'userId=USERID&detach=false' http://localhost:8081/tasks/TASKID
-taskRouter.patch('/:id', urlencodedParser, body('userId').notEmpty(), body('detach').notEmpty(), function (req, res) {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    var msg;
-    var task = taskInterface.findTaskById(req.params.id);
-    var user = findUserById(req.body.userId);
-    if (task == undefined){
-        msg = 'Task not found';
-    } else if (user == undefined){
-        msg = 'User not found';
-    } else {
-        if (req.body.detach == "true"){
-            taskInterface.detachTaskFromUser(req.body.userId, req.params.id);
-            msg = 'Task detached';
+// delete all task mapping as result?
+// DELETE /id (delete task with id): curl -X DELETE http://localhost:8082/tasks/TASKID
+taskRouter.delete('/:id', async function (req, res, next) {
+    msg = `Task with id ${req.params.id} `;
+    try{
+        const task = await taskInterface.findTaskById(req.params.id);
+        if (task.length){
+            await taskInterface.deleteTask(req.params.id);
+            msg += `deleted`;
         } else {
-            res.send(taskInterface.attachTaskToUser(req.body.userId, req.params.id));
-            return;
-            // msg = 'Task attached';
+            msg += `doesn't exists`;
         }
+        res.send(msg);
+    } catch (err){
+        next(err);
     }
-    res.send(msg);
-})
+});
+
+// PATCH /id (map task with id to user with userId): curl -X PATCH -d 'userId=USERID&detach=false' http://localhost:8082/tasks/TASKID
+taskRouter.patch('/:id', urlencodedParser, body('userId').notEmpty(), body('detach').notEmpty(), async function (req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+    try{
+        const task = await taskInterface.findTaskById(req.params.id);
+        const user = await findUserById(req.body.userId);
+        if (!task.length)
+            res.send(`task with id ${req.params.id} not found`);
+        else if (!user.length)
+            res.send(`user with id ${req.body.userId} not found`);
+        else{
+            if (req.body.detach == "true"){
+                if (await taskInterface.detachTaskFromUser(req.body.userId, req.params.id))
+                    res.send(`mapping detached`);
+                else
+                    res.send(`no mapping found`);
+            } else {
+                if (await taskInterface.mappingExists(req.body.userId, req.params.id))
+                    res.send(`mapping exists`);
+                else {
+                    await taskInterface.attachTaskToUser(req.body.userId, req.params.id);
+                    res.send(`mapping attached`);
+                }
+            }
+        }    
+    } catch (err){
+        next(err);
+    }
+});
 
 module.exports = taskRouter;

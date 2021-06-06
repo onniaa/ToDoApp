@@ -5,55 +5,75 @@ const { body, param, validationResult } = require('express-validator');
 var jsonParser = bodyParser.json()
 var urlencodedParser = bodyParser.urlencoded({ extended: false })
 
-// GET (get all users): curl -X GET http://localhost:8081/users/
-userRouter.get('/', function(req, res){
-    res.send(userInterface.getAllUsers());
+// GET (get all users): curl -X GET http://localhost:8082/users/
+userRouter.get('/', async function(req, res, next){
+    try{
+        res.send(await userInterface.getAllUsers());
+    } catch (err){
+        next(err);
+    }
 })
 
-// POST (create user): curl -X POST -d 'username=onni&email=onni@gmail.com' http://localhost:8081/users
-userRouter.post('/', urlencodedParser, body('email').isEmail(), body('username').notEmpty(), function(req, res) {
-    var msg;
+// POST (create user): curl -X POST -d 'username=onni&email=onni@gmail.com' http://localhost:8082/users
+userRouter.post('/', urlencodedParser, body('email').isEmail(), body('username').notEmpty(), async function(req, res, next) {
     const errors = validationResult(req);
-    if (!errors.isEmpty()) {
+    if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
+    try{
+        if (await userInterface.emailInUse(req.body.email))
+            res.send(`User with email ${req.body.email} already exists`);
+        else {
+            const userId = await userInterface.createUser(req.body.username, req.body.email);
+            res.send(`User created with id ${userId}`);
+        }
+    } catch (err){
+        next(err);
     }
-    if (userInterface.userExists(req.body.email)){
-        msg = 'User with email ' + req.body.email + ' already exists';
-    } else {
-        const userId = userInterface.createUser(req.body.username, req.body.email)
-        msg = 'User created with id: ' + userId;
-    }
-    res.send(msg);
-})
+});
 
-// GET /id (get user with id): curl -X GET http://localhost:8081/users/USERID
-userRouter.get('/:id', function (req, res) {
-    var user = userInterface.findUserById(req.params.id)
-    if (user == undefined){
-        res.send('User not found');
-    } else{
-        res.send(user);
+// GET /id (get user with id): curl -X GET http://localhost:8082/users/USERID
+userRouter.get('/:id', async function (req, res, next) {
+    try{
+        res.send(await userInterface.findUserById(req.params.id));
+    } catch (err){
+        next(err);
     }
-})
+});
 
-// PUT /id (update task with id): curl -X PUT -d 'username=onni&email=onni@loadmill.com' http://localhost:8081/users/USERID
-userRouter.put('/:id', urlencodedParser, body('email').isEmail(), body('username').notEmpty(), function (req, res) {
-    var userUpdated = userInterface.updateUser(req.params.id, req.body.username, req.body.email)
-    if (userUpdated){
-        res.send('User updated');
-    } else{
-        res.send('User not found');
+// PUT /id (update task with id): curl -X PUT -d 'username=onni&email=onni@loadmill.com' http://localhost:8082/users/USERID
+userRouter.put('/:id', urlencodedParser, body('email').isEmail(), body('username').notEmpty(), async function (req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty())
+      return res.status(400).json({ errors: errors.array() });
+    msg = `User with id ${req.params.id} `;
+    try{
+        const user = await userInterface.updateUser(req.params.id, req.body);
+        if (user)
+            msg += `updated`;
+        else
+            msg += `not found`;
+        res.send(msg);    
+    } catch (err) {
+        next(err);
     }
-})
+});
 
-// DELETE (delete task with id): curl -X DELETE http://localhost:8081/users/USERID
-userRouter.delete('/:id', function (req, res) {
-    var userDeleted = userInterface.deleteUser(req.params.id);
-    if (userDeleted){
-        res.send('User deleted');
-    } else {
-        res.send('User not found');
+// delete all user mapping as result?
+// DELETE (delete task with id): curl -X DELETE http://localhost:8082/users/USERID
+userRouter.delete('/:id', async function (req, res, next) {
+    msg = `User with id ${req.params.id} `;
+    try{
+        const user = await userInterface.findUserById(req.params.id);
+        if (user.length){
+            await userInterface.deleteUser(req.params.id);
+            msg += `deleted`;
+        } else {
+            msg += `doesn't exists`;
+        }
+        res.send(msg);
+    } catch (err){
+        next(err);
     }
-})
+});
 
 module.exports = userRouter;

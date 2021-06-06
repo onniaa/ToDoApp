@@ -1,55 +1,48 @@
+const { default: knex } = require('knex');
 const { v4: uuidv4 } = require('uuid');
+const db = require('../db/db');
+const usersTable = 'users';
 
-const DB = []
-
-function findUserById(id){
-    return DB.find(user => user.id == id)
+async function findUserById(id){
+    return await db(usersTable)
+                .where({id});
 }
 
-function initUser(username, email){
-    const usersId = uuidv4()
-    var user = {id: usersId, username: username, email: email}
-    return user
+async function deleteUser(id){
+    await db(usersTable)
+        .where({id})
+        .del();
 }
 
-function deleteUser(id){
-    var user = findUserById(id);
-    if (user == undefined){
-        return false;
-    }
-    var index = DB.indexOf(user)
-    DB.splice(index, 1)
-    return true;
+async function createUser(username, email){
+    return await db(usersTable)
+                .returning('id')
+                .insert({
+                    username: username,
+                    email: email
+                })
 }
 
-function createUser(username, email){
-    var user = initUser(username, email)
-    DB.push(user)
-    return user.id
+// ADD: check if email is updated anf if so if in use already
+async function updateUser(id, changes){
+    return await db(usersTable)
+                // .returning('id')
+                .where({id})
+                .update(changes);
 }
 
-function updateUser(id, username, email){
-    var user = findUserById(id);
-    if (user == undefined){
-        return false;
-    }
-    var index = DB.indexOf(user);
-
-    DB[index].username = username;
-    DB[index].email = email;
-    return true;
-}
-
-function getAllUsers(){
-    return DB;
+async function getAllUsers(){
+    return await db(usersTable)
+                .select();
 }
 
 // By unique email (identical username accepted for now)
-function userExists(email){
-    if (DB.find(user => user.email == email) == undefined){
-        return false;
-    }
-    return true;
+async function emailInUse(email){
+    const usersWithEmail = await db(usersTable)
+                                .where('email', email);
+    if (usersWithEmail.length)
+        return true;
+    return false;
 }
 
 module.exports = {
@@ -58,5 +51,5 @@ module.exports = {
     deleteUser,
     findUserById,
     getAllUsers,
-    userExists
+    emailInUse
 }
