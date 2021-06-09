@@ -12,6 +12,14 @@ async function deleteUser(id){
     await db(usersTable)
         .where({id})
         .del();
+
+    await deleteTaskToUserMappings(id);
+}
+
+async function deleteTaskToUserMappings(userId) {
+    await db('task_user_map')
+        .where('user_id', userId)
+        .del()
 }
 
 async function createUser(username, email){

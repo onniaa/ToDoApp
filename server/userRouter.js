@@ -15,7 +15,7 @@ userRouter.get('/', async function(req, res, next){
 })
 
 // POST (create user): curl -X POST -d 'username=onni&email=onni@gmail.com' http://localhost:8082/users
-userRouter.post('/', urlencodedParser, body('email').isEmail(), body('username').notEmpty(), async function(req, res, next) {
+userRouter.post('/', jsonParser, body('email').isEmail(), body('username').notEmpty(), async function(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
@@ -41,7 +41,7 @@ userRouter.get('/:id', async function (req, res, next) {
 });
 
 // PUT /id (update task with id): curl -X PUT -d 'username=onni&email=onni@loadmill.com' http://localhost:8082/users/USERID
-userRouter.put('/:id', urlencodedParser, body('email').isEmail(), body('username').notEmpty(), async function (req, res, next) {
+userRouter.put('/:id', jsonParser, body('email').isEmail(), body('username').notEmpty(), async function (req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });

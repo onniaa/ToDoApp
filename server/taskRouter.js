@@ -16,7 +16,7 @@ taskRouter.get('/', async function(req, res, next){
 });
 
 // POST (create task): curl -X POST -d 'header=To Do App&description=Code one' http://localhost:8082/tasks
-taskRouter.post('/', urlencodedParser, body('header').notEmpty(), async function(req, res, next) {
+taskRouter.post('/', jsonParser, body('header').notEmpty(), async function(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
@@ -37,8 +37,17 @@ taskRouter.get('/:id', async function (req, res, next) {
     }
 });
 
+// // GET /id (get task with id): curl -X GET http://localhost:8082/tasks/TASKID/users
+// taskRouter.get('/:id/users', async function (req, res, next) {
+//     try{
+//         res.send(await taskInterface.getTaskUsers(req.params.id));
+//     } catch (err){
+//         next(err);
+//     }
+// });
+
 // PUT /id (update task with id): curl -X PUT -d 'header=To Do App&description=New description' http://localhost:8082/tasks/TASKID
-taskRouter.put('/:id', urlencodedParser, body('header').notEmpty(), async function (req, res, next) {
+taskRouter.put('/:id', jsonParser, body('header').notEmpty(), async function (req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
@@ -74,7 +83,7 @@ taskRouter.delete('/:id', async function (req, res, next) {
 });
 
 // PATCH /id (map task with id to user with userId): curl -X PATCH -d 'userId=USERID&detach=false' http://localhost:8082/tasks/TASKID
-taskRouter.patch('/:id', urlencodedParser, body('userId').notEmpty(), body('detach').notEmpty(), async function (req, res, next) {
+taskRouter.patch('/:id', jsonParser, body('userId').notEmpty(), body('detach').notEmpty(), async function (req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty())
       return res.status(400).json({ errors: errors.array() });
