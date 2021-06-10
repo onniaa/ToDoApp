@@ -22,7 +22,7 @@ taskRouter.post('/', jsonParser, body('header').notEmpty(), async function(req, 
       return res.status(400).json({ errors: errors.array() });
     try{
         const taskId = await taskInterface.createTask(req.body.header, req.body.description);
-        res.send(`Task created with id ${taskId}`);
+        res.send(taskId);
     } catch (err){
         next(err);
     }
@@ -36,15 +36,6 @@ taskRouter.get('/:id', async function (req, res, next) {
         next(err);
     }
 });
-
-// // GET /id (get task with id): curl -X GET http://localhost:8082/tasks/TASKID/users
-// taskRouter.get('/:id/users', async function (req, res, next) {
-//     try{
-//         res.send(await taskInterface.getTaskUsers(req.params.id));
-//     } catch (err){
-//         next(err);
-//     }
-// });
 
 // PUT /id (update task with id): curl -X PUT -d 'header=To Do App&description=New description' http://localhost:8082/tasks/TASKID
 taskRouter.put('/:id', jsonParser, body('header').notEmpty(), async function (req, res, next) {
@@ -104,8 +95,7 @@ taskRouter.patch('/:id', jsonParser, body('userId').notEmpty(), body('detach').n
                 if (await taskInterface.mappingExists(req.body.userId, req.params.id))
                     res.send(`mapping exists`);
                 else {
-                    await taskInterface.attachTaskToUser(req.body.userId, req.params.id);
-                    res.send(`mapping attached`);
+                    res.send(await taskInterface.attachTaskToUser(req.body.userId, req.params.id));
                 }
             }
         }    

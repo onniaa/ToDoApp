@@ -24,7 +24,7 @@ userRouter.post('/', jsonParser, body('email').isEmail(), body('username').notEm
             res.send(`User with email ${req.body.email} already exists`);
         else {
             const userId = await userInterface.createUser(req.body.username, req.body.email);
-            res.send(`User created with id ${userId}`);
+            res.send(userId);
         }
     } catch (err){
         next(err);
