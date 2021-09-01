@@ -66,9 +66,30 @@
       "runInCi": true
     }
   ],
-  "hooks": {},
+  "hooks": {
+    "beforeAll": {
+      "duration": 60000,
+      "concurrency": 5,
+      "requests": [
+        {
+          "url": "walla.com",
+          "method": "GET",
+          "postScript": "",
+          "timeout": 60000,
+          "expectedStatus": "SUCCESS"
+        }
+      ],
+      "meta": {},
+      "rampUp": 60000,
+      "targetedCountries": [],
+      "iterationDelay": 1000,
+      "cachePenetration": {}
+    }
+  },
   "dependencies": {
-    "hooks": {},
+    "hooks": {
+      "beforeAllId": "47fb72fe-e86c-4296-9345-27688287c967"
+    },
     "login": {
       "id": "8da99c78-7b42-4ef4-972c-3a301ad7e9c4"
     }
