@@ -24,6 +24,13 @@
             "postScript": "",
             "timeout": 60000,
             "expectedStatus": "SUCCESS"
+          },
+          {
+            "url": "https://loadmill-test-blog.herokuapp.com/1",
+            "method": "GET",
+            "postScript": "",
+            "timeout": 60000,
+            "expectedStatus": "SUCCESS"
           }
         ],
         "meta": {
