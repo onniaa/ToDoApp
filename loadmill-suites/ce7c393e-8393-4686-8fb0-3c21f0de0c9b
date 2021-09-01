@@ -1,0 +1,57 @@
+{
+  "conf": {
+    "meta": {
+      "description": "New Test Suite 2 - Sep 01"
+    },
+    "useCookies": true,
+    "parameters": [
+      {
+        "host": "https://loadmill-test-blog.herokuapp.com"
+      }
+    ],
+    "loginFlow": [],
+    "authenticationHeaders": [],
+    "parametersScope": "FLOW",
+    "sharedLoginFlowDescription": "New Load Test - Sep 01"
+  },
+  "flows": [
+    {
+      "id": "630855e0-d16f-4886-90ba-612ae20eb0c0",
+      "order": 0,
+      "conf": {
+        "duration": 60000,
+        "concurrency": 5,
+        "requests": [
+          {
+            "url": "${host}",
+            "method": "GET",
+            "postScript": "",
+            "timeout": 60000,
+            "expectedStatus": "SUCCESS"
+          }
+        ],
+        "meta": {
+          "description": "New Flow"
+        },
+        "skipLoginFlow": false,
+        "rampUp": 60000,
+        "targetedCountries": [],
+        "iterationDelay": 1000,
+        "cachePenetration": {},
+        "parameters": [
+          {
+            "host": "https://loadmill-test-blog.herokuapp.com"
+          }
+        ]
+      },
+      "runInCi": false
+    }
+  ],
+  "hooks": {},
+  "dependencies": {
+    "hooks": {},
+    "login": {
+      "id": "9666322c-a39f-4e65-97ee-608bfe4273d0"
+    }
+  }
+}
