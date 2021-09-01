@@ -29,7 +29,7 @@
             "url": "${host}",
             "description": "get blog",
             "postData": {
-              "text": "{\"param1\": ${param1}}",
+              "text": "{\"param1\": \"${param1}\"}",
               "mimeType": "application/json"
             },
             "method": "GET",
