@@ -34,7 +34,7 @@
           }
         ],
         "meta": {
-          "description": "New Flow"
+          "description": "New Flow in Github"
         },
         "skipLoginFlow": false,
         "rampUp": 60000,
@@ -43,7 +43,7 @@
         "cachePenetration": {},
         "parameters": []
       },
-      "runInCi": false
+      "runInCi": true
     }
   ],
   "hooks": {},
