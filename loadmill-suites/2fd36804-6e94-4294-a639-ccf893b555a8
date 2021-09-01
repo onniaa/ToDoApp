@@ -7,6 +7,9 @@
     "parameters": [
       {
         "host": "https://loadmill-test-blog.herokuapp.com"
+      },
+      {
+        "param1": "suite1 param1"
       }
     ],
     "loginFlow": [],
@@ -26,7 +29,7 @@
             "url": "${host}",
             "description": "get blog",
             "postData": {
-              "text": "{\"param1\": \"suite1 param1\"}",
+              "text": "{\"param1\": ${param1}}",
               "mimeType": "application/json"
             },
             "method": "GET",
@@ -54,6 +57,9 @@
         "parameters": [
           {
             "host": "https://loadmill-test-blog.herokuapp.com"
+          },
+          {
+            "param1": "suite1 param1"
           }
         ]
       },
