@@ -25,7 +25,12 @@
           {
             "url": "${host}",
             "description": "get blog",
+            "postData": {
+              "text": "{\"param1\": \"suite1 param1\"}",
+              "mimeType": "application/json"
+            },
             "method": "GET",
+            "assert": [],
             "postScript": "",
             "timeout": 60000,
             "expectedStatus": "SUCCESS"
