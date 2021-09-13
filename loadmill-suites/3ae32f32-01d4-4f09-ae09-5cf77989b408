@@ -7,6 +7,9 @@
     "parameters": [
       {
         "param1": "global param"
+      },
+      {
+        "param4": "Suite param"
       }
     ],
     "loginFlow": [],
@@ -24,24 +27,11 @@
         "requests": [
           {
             "url": "https://loadmill-test-blog.herokuapp.com/",
-            "method": "GET",
-            "postScript": "",
-            "timeout": 60000,
-            "expectedStatus": "SUCCESS"
-          },
-          {
-            "url": "https://loadmill-test-blog.herokuapp.com/",
             "postData": {
-              "text": "{\"param1\":\"${param1}\"}",
+              "text": "{\"param4\": \"${param4}\"}",
               "mimeType": "application/json"
             },
             "method": "GET",
-            "assert": [],
-            "extract": [
-              {
-                "param2": "extracted param"
-              }
-            ],
             "postScript": "",
             "timeout": 60000,
             "expectedStatus": "SUCCESS"
@@ -58,53 +48,18 @@
         "parameters": [
           {
             "param1": "global param"
+          },
+          {
+            "param4": "Suite param"
           }
         ]
       },
       "runInCi": true
     }
   ],
-  "hooks": {
-    "beforeAll": {
-      "duration": 120000,
-      "concurrency": 5,
-      "requests": [
-        {
-          "url": "https://loadmill-test-blog.herokuapp.com/",
-          "postData": {
-            "text": "{\"param1\":\"${param1}\"}",
-            "mimeType": "application/json"
-          },
-          "method": "GET",
-          "assert": [],
-          "extract": [
-            {
-              "param2": "extracted param"
-            }
-          ],
-          "postScript": "",
-          "timeout": 60000,
-          "expectedStatus": "SUCCESS"
-        }
-      ],
-      "meta": {},
-      "useCookies": true,
-      "rampUp": 60000,
-      "parameters": [
-        {
-          "param1": "global param"
-        }
-      ],
-      "targetedCountries": [],
-      "iterationDelay": 1000,
-      "cachePenetration": {},
-      "authenticationHeaders": []
-    }
-  },
+  "hooks": {},
   "dependencies": {
-    "hooks": {
-      "beforeAllId": "18123350-41ce-4b5d-8b2e-24a5f423ee9f"
-    },
+    "hooks": {},
     "login": {
       "id": "c22a9d3d-4f0b-4592-93f6-97765e9828b8"
     }
