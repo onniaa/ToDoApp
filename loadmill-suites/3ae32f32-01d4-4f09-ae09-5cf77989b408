@@ -1,0 +1,112 @@
+{
+  "conf": {
+    "meta": {
+      "description": "New Test Suite - Sep 13"
+    },
+    "useCookies": true,
+    "parameters": [
+      {
+        "param1": "global param"
+      }
+    ],
+    "loginFlow": [],
+    "authenticationHeaders": [],
+    "parametersScope": "FLOW",
+    "sharedLoginFlowDescription": "New Load Test - Sep 13"
+  },
+  "flows": [
+    {
+      "id": "9d0ae960-7e7d-471d-b8f2-4a9f383a4b60",
+      "order": 0,
+      "conf": {
+        "duration": 60000,
+        "concurrency": 5,
+        "requests": [
+          {
+            "url": "https://loadmill-test-blog.herokuapp.com/",
+            "method": "GET",
+            "postScript": "",
+            "timeout": 60000,
+            "expectedStatus": "SUCCESS"
+          },
+          {
+            "url": "https://loadmill-test-blog.herokuapp.com/",
+            "postData": {
+              "text": "{\"param1\":\"${param1}\"}",
+              "mimeType": "application/json"
+            },
+            "method": "GET",
+            "assert": [],
+            "extract": [
+              {
+                "param2": "extracted param"
+              }
+            ],
+            "postScript": "",
+            "timeout": 60000,
+            "expectedStatus": "SUCCESS"
+          }
+        ],
+        "meta": {
+          "description": "New Flow"
+        },
+        "skipLoginFlow": false,
+        "rampUp": 60000,
+        "targetedCountries": [],
+        "iterationDelay": 1000,
+        "cachePenetration": {},
+        "parameters": [
+          {
+            "param1": "global param"
+          }
+        ]
+      },
+      "runInCi": false
+    }
+  ],
+  "hooks": {
+    "beforeAll": {
+      "duration": 120000,
+      "concurrency": 5,
+      "requests": [
+        {
+          "url": "https://loadmill-test-blog.herokuapp.com/",
+          "postData": {
+            "text": "{\"param1\":\"${param1}\"}",
+            "mimeType": "application/json"
+          },
+          "method": "GET",
+          "assert": [],
+          "extract": [
+            {
+              "param2": "extracted param"
+            }
+          ],
+          "postScript": "",
+          "timeout": 60000,
+          "expectedStatus": "SUCCESS"
+        }
+      ],
+      "meta": {},
+      "useCookies": true,
+      "rampUp": 60000,
+      "parameters": [
+        {
+          "param1": "global param"
+        }
+      ],
+      "targetedCountries": [],
+      "iterationDelay": 1000,
+      "cachePenetration": {},
+      "authenticationHeaders": []
+    }
+  },
+  "dependencies": {
+    "hooks": {
+      "beforeAllId": "18123350-41ce-4b5d-8b2e-24a5f423ee9f"
+    },
+    "login": {
+      "id": "c22a9d3d-4f0b-4592-93f6-97765e9828b8"
+    }
+  }
+}
