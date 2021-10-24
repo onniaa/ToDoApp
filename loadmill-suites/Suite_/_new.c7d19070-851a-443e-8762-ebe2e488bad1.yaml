@@ -1,0 +1,25 @@
+conf:
+  meta:
+    description: Suite / new
+  parameters: []
+  useCookies: true
+  loginFlow: []
+  authenticationHeaders: []
+  sharedLoginFlowDescription: New Load Test - Oct 24
+  parametersScope: FLOW
+flows:
+  - id: 4d4fa9b5-7091-42cb-aa21-2083ffdf6686
+    order: 0
+    conf:
+      meta:
+        description: New Flow / first
+      requests:
+        
+        - method: GET
+          url: www.ynet.co.il
+    runInCi: false
+hooks: {}
+dependencies:
+  login:
+    id: bd6a595a-d4f3-4a47-a7df-b7d4f7eaa56e
+
