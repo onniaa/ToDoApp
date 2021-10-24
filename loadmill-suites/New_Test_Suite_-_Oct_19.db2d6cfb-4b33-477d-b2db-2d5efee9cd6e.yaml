@@ -1,0 +1,25 @@
+conf:
+  meta:
+    description: New Test/Suite - Oct.19
+  parameters: []
+  useCookies: true
+  loginFlow: []
+  authenticationHeaders: []
+  sharedLoginFlowDescription: New Load Test - Oct 24
+  parametersScope: FLOW
+flows:
+  - id: e70175f4-978c-4ecb-bd2b-a120e1865ad7
+    order: 0
+    conf:
+      meta:
+        description: New Flow
+      requests:
+        
+        - method: GET
+          url: https://loadmill-test-blog.herokuapp.com/
+    runInCi: false
+hooks: {}
+dependencies:
+  login:
+    id: fa297f71-c53b-4935-9a65-f4b3ac765f03
+
