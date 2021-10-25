@@ -1,6 +1,6 @@
 conf:
   meta:
-    description: New Test/Suite - Oct.19
+    description: New Test Suite - Oct 19
   parameters: []
   useCookies: true
   loginFlow: []
@@ -15,6 +15,9 @@ flows:
         description: New Flow
       requests:
         
+        - method: GET
+          url: https://loadmill-test-blog.herokuapp.com/
+
         - method: GET
           url: https://loadmill-test-blog.herokuapp.com/
     runInCi: false
